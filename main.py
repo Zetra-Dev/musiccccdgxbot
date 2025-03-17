@@ -43,14 +43,6 @@ async def music_queue():
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.post("/leave-voice")
-async def leave_voice():
-    if not bot_client.is_ready():
-        raise HTTPException(status_code=400, detail="Bot no está listo")
-    
-    await bot_client.leave_voice_channel()
-    return {"message": "Bot se ha desconectado del canal de voz"}
-
 
 if __name__ == "__main__":
     # Inicia la aplicación FastAPI
