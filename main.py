@@ -43,8 +43,8 @@ async def music_queue():
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.post("/leave-music")
-async def leave_music(request: LeaveRequest):
+@app.post("/stop-music")
+async def stop_music(request: LeaveRequest):
     try:
         m = await music_bot.leave_voice_channel(request.guild_id)
         return JSONResponse({"message": m}, status_code=200)
