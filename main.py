@@ -46,10 +46,20 @@ async def music_queue():
 @app.post("/stop-music")
 async def stop_music(request: LeaveRequest):
     try:
-        m = await music_bot.leave_voice_channel(request.guild_id)
-        return JSONResponse({"message": m}, status_code=200)
+        # Verifica o guild_id recebido
+        print(f"Recebido guild_id: {request.guild_id}")
+        
+        # Chama o método para deixar o canal de voz
+        message = await music_bot.leave_voice_channel(request.guild_id)
+        
+        # Retorna sucesso com a mensagem
+        return JSONResponse({"message": message}, status_code=200)
+    
     except Exception as e:
+        # Se houver erro, imprime o erro para depuração
+        print(f"Erro ao tentar parar a música: {e}")
         raise HTTPException(status_code=400, detail=str(e))
+
 
 if __name__ == "__main__":
     # Inicia a aplicação FastAPI
