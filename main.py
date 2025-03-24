@@ -6,6 +6,8 @@ import asyncio
 import os
 from dotenv import load_dotenv
 import uvicorn
+from pydantic import BaseModel
+
 
 # Carregar variáveis de ambiente
 load_dotenv()
