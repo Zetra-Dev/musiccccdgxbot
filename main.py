@@ -6,8 +6,6 @@ import asyncio
 import os
 from dotenv import load_dotenv
 import uvicorn
-from pydantic import BaseModel
-
 
 # Carregar variáveis de ambiente
 load_dotenv()
@@ -23,8 +21,7 @@ class MusicRequest(BaseModel):
 
 class LeaveRequest(BaseModel):
     guild_id: str
-    
-    
+
 @app.on_event("startup")
 async def startup_event():
     # Inicia o bot de Discord
@@ -45,6 +42,7 @@ async def music_queue():
         return {"queue": queue}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
 class StopMusicRequest(BaseModel):
     user_id: str
     guild_id: str
@@ -56,11 +54,7 @@ async def stop_music(request: StopMusicRequest):
         return JSONResponse(response, status_code=200)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-class StopMusicRequest(BaseModel):
-    user_id: str
-    guild_id: str
 
 if __name__ == "__main__":
     # Inicia a aplicação FastAPI
     uvicorn.run(app, host="0.0.0.0", port=8000)
-    
