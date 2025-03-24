@@ -42,6 +42,18 @@ async def music_queue():
         return {"queue": queue}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+class StopMusicRequest(BaseModel):
+    user_id: str
+    guild_id: str
+
+@app.post("/stop-music")
+async def stop_music(request: StopMusicRequest):
+    try:
+        response = await music_bot.stop_music(request.user_id, request.guild_id)
+        return JSONResponse(response, status_code=200)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 
 if __name__ == "__main__":
     # Inicia a aplicação FastAPI
