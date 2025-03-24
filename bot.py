@@ -17,11 +17,8 @@ class MusicBot(commands.Bot):
         self.voice_client = None
         self.music_queue = []  # Cola para almacenar las URLs de música
         self.is_playing = False  # Indicador de estado de reproducción
-    
-
 
     async def play_music(self, user_id, channel_id, guild_id, query):
-
         try:
             print(f"Buscando audio para la consulta: {query}")
             guild = self.get_guild(int(guild_id))
@@ -29,7 +26,6 @@ class MusicBot(commands.Bot):
                 print("No se pudo encontrar el servidor.")
                 return "El bot no está en el servidor especificado."
             
-
             member = guild.get_member(int(user_id))
             if member is None:
                 print("El usuario no se encuentra en el servidor.")
@@ -45,11 +41,6 @@ class MusicBot(commands.Bot):
 
             results = YoutubeSearch(extract, max_results=1).to_json()
             data_url = json.loads(results)
-            
-
-
-
-            
 
             url = get_youtube_audio_url(extract)
 
@@ -70,7 +61,6 @@ class MusicBot(commands.Bot):
                 asyncio.create_task(self.start_playing())  # Reproducción en segundo plano
 
             # Enviar respuesta JSON inmediatamente
-            
             return {"status": "success", "message": "Canción agregada a la cola", "queue": self.music_queue, "info_music": data_url}
 
         except Exception as e:
@@ -110,6 +100,24 @@ class MusicBot(commands.Bot):
     async def show_queue(self):
         return self.music_queue  # Devuelve la cola actual
 
+    async def stop_music(self, user_id, guild_id):
+        guild = self.get_guild(int(guild_id))
+        if not guild:
+            return {"status": "error", "message": "Servidor não encontrado."}
+
+        member = guild.get_member(int(user_id))
+        if not member:
+            return {"status": "error", "message": "Usuário não encontrado no servidor."}
+
+        if self.voice_client:
+            await self.voice_client.disconnect()
+            self.voice_client = None
+            self.is_playing = False
+            self.music_queue = []  # Limpa a fila de músicas
+            return {"status": "success", "message": "Bot desconectado e fila de músicas limpa."}
+        
+        return {"status": "error", "message": "O bot não está em um canal de voz."}
+
     async def on_ready(self):
         print(f"Bot conectado como {self.user} en el servidor.")
 
@@ -117,22 +125,3 @@ class MusicBot(commands.Bot):
         # Inicia el bot
         TOKEN = os.getenv("DISCORD_TOKEN")
         await self.start(TOKEN)
-
-
-async def stop_music(self, user_id, guild_id):
-    guild = self.get_guild(int(guild_id))
-    if not guild:
-        return {"status": "error", "message": "Servidor não encontrado."}
-
-    member = guild.get_member(int(user_id))
-    if not member:
-        return {"status": "error", "message": "Usuário não encontrado no servidor."}
-
-    if self.voice_client:
-        await self.voice_client.disconnect()
-        self.voice_client = None
-        self.is_playing = False
-        self.music_queue = []  # Limpa a fila de músicas
-        return {"status": "success", "message": "Bot desconectado e fila de músicas limpa."}
-    
-    return {"status": "error", "message": "O bot não está em um canal de voz."}
