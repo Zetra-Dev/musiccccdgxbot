@@ -24,9 +24,6 @@ class MusicRequest(BaseModel):
 class LeaveRequest(BaseModel):
     guild_id: str
     
-class StopMusicRequest(BaseModel):
-    user_id: str
-    guild_id: str
     
 @app.on_event("startup")
 async def startup_event():
@@ -59,6 +56,9 @@ async def stop_music(request: StopMusicRequest):
         return JSONResponse(response, status_code=200)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+class StopMusicRequest(BaseModel):
+    user_id: str
+    guild_id: str
 
 if __name__ == "__main__":
     # Inicia a aplicação FastAPI
