@@ -23,7 +23,11 @@ class MusicRequest(BaseModel):
 
 class LeaveRequest(BaseModel):
     guild_id: str
-
+    
+class StopMusicRequest(BaseModel):
+    user_id: str
+    guild_id: str
+    
 @app.on_event("startup")
 async def startup_event():
     # Inicia o bot de Discord
