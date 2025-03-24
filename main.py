@@ -67,26 +67,19 @@ class LoopQueueRequest(BaseModel):
 
 
 
+@app.on_event("startup")
+async def startup_event():
+    # Inicia el bot de Discord
+    asyncio.create_task(music_bot.start_bot())
+
 @app.post("/play-music")
-
 async def play_music(request: MusicRequest):
+    try:
 
-    if request.token not in bots:
-
-        bot = MusicBot(request.token)  # Se pasa el token al constructor
-
-        bots[request.token] = bot
-
-        asyncio.create_task(bot.start_bot())
-
-
-
-    bot = bots[request.token]
-
-    result = await bot.play_music(request.user_id, request.channel_id, request.guild_id, request.query)  # Corregir el orden
-
-    return result
-
+        m = await music_bot.play_music(request.user_id, request.channel_id, request.guild_id, request.query)
+        return JSONResponse({"message": m}, status_code=200)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @app.post("/pause-music")
