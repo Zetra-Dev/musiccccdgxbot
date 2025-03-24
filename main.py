@@ -6,9 +6,6 @@ import asyncio
 import os
 from dotenv import load_dotenv
 import uvicorn
-from bot import MusicBot
-
-
 
 app = FastAPI()
 
