@@ -60,7 +60,7 @@ async def stop_music(request: StopMusicRequest):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-
 if __name__ == "__main__":
     # Inicia a aplicação FastAPI
     uvicorn.run(app, host="0.0.0.0", port=8000)
+    
