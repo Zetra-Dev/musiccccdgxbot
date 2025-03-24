@@ -117,3 +117,22 @@ class MusicBot(commands.Bot):
         # Inicia el bot
         TOKEN = os.getenv("DISCORD_TOKEN")
         await self.start(TOKEN)
+
+
+async def stop_music(self, user_id, guild_id):
+    guild = self.get_guild(int(guild_id))
+    if not guild:
+        return {"status": "error", "message": "Servidor não encontrado."}
+
+    member = guild.get_member(int(user_id))
+    if not member:
+        return {"status": "error", "message": "Usuário não encontrado no servidor."}
+
+    if self.voice_client:
+        await self.voice_client.disconnect()
+        self.voice_client = None
+        self.is_playing = False
+        self.music_queue = []  # Limpa a fila de músicas
+        return {"status": "success", "message": "Bot desconectado e fila de músicas limpa."}
+    
+    return {"status": "error", "message": "O bot não está em um canal de voz."}
