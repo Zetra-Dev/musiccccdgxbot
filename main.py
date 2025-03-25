@@ -38,7 +38,10 @@ async def play_music(request: MusicRequest):
 @app.post("/pause-music")
 async def pause_music(request: GuildRequest):
     if request.token in bots:
-        return await bots[request.token].pause_music(request.guild_id)
+        try:
+            return await bots[request.token].pause_music(request.guild_id)
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))
     return {"status": 404, "message": "Bot no encontrado."}
 
 @app.post("/resume-music")
