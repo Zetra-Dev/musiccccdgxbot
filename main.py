@@ -1,32 +1,31 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from bot import MusicBot  # Importação do MusicBot
+from bot import MusicBot
 import asyncio
 import os
 from dotenv import load_dotenv
 import uvicorn
 
+# Cargar variables de entorno desde el archivo .env
+load_dotenv()
+
 app = FastAPI()
-
-bots = {}  # Dicionário de bots baseado em tokens
-
-# Inicializar o bot globalmente
 music_bot = MusicBot()
 
 class MusicRequest(BaseModel):
-    token: str
     user_id: str
     channel_id: str
-    guild_id: int
+    guild_id: str
     query: str
 
-# Restante das classes...
+class GuildRequest(BaseModel):
+    guild_id: str
 
 @app.on_event("startup")
 async def startup_event():
-    # Inicia o bot de Discord ao iniciar o servidor
-    await music_bot.start_bot()  # Agora é await, garantido que o bot inicializa
+    # Inicia el bot de Discord
+    asyncio.create_task(music_bot.start_bot())
 
 @app.post("/play-music")
 async def play_music(request: MusicRequest):
@@ -38,11 +37,36 @@ async def play_music(request: MusicRequest):
 
 @app.post("/pause-music")
 async def pause_music(request: GuildRequest):
-    if request.token in bots:
-        return await bots[request.token].pause_music(request.guild_id)
-    return {"status": 404, "message": "Bot não encontrado."}
+    try:
+        m = await music_bot.pause_music(request.guild_id)
+        return JSONResponse({"message": m}, status_code=200)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
-# As outras rotas seguem o mesmo formato de verificação e execução
+@app.post("/resume-music")
+async def resume_music(request: GuildRequest):
+    try:
+        m = await music_bot.resume_music(request.guild_id)
+        return JSONResponse({"message": m}, status_code=200)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/skip-music")
+async def skip_music(request: GuildRequest):
+    try:
+        m = await music_bot.skip_music(request.guild_id)
+        return JSONResponse({"message": m}, status_code=200)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/music-queue")
+async def music_queue():
+    try:
+        queue = await music_bot.show_queue()
+        return {"queue": queue}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 if __name__ == "__main__":
+    # Inicia la aplicación FastAPI
     uvicorn.run(app, host="0.0.0.0", port=8000)
