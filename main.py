@@ -35,31 +35,6 @@ async def play_music(request: MusicRequest):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.post("/pause-music")
-async def pause_music(request: GuildRequest):
-    if request.token in bots:
-        try:
-            return await bots[request.token].pause_music(request.guild_id)
-        except Exception as e:
-            raise HTTPException(status_code=400, detail=str(e))
-    return {"status": 404, "message": "Bot no encontrado."}
-
-@app.post("/resume-music")
-async def resume_music(request: GuildRequest):
-    try:
-        m = await music_bot.resume_music(request.guild_id)
-        return JSONResponse({"message": m}, status_code=200)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-@app.post("/skip-music")
-async def skip_music(request: GuildRequest):
-    try:
-        m = await music_bot.skip_music(request.guild_id)
-        return JSONResponse({"message": m}, status_code=200)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
 @app.get("/music-queue")
 async def music_queue():
     try:
